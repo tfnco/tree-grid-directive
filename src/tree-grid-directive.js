@@ -9,8 +9,8 @@
                     " <table class=\"table tree-grid\">\n" +
                     "   <thead>\n" +
                     "     <tr>\n" +
-                    "       <th><a ng-if=\"expandingProperty.sortable\" ng-click=\"sortBy(expandingProperty)\">{{expandingProperty.displayName || expandingProperty.field || expandingProperty}}</a><span ng-if=\"!expandingProperty.sortable\">{{expandingProperty.displayName || expandingProperty.field || expandingProperty}}</span><i ng-if=\"expandingProperty.sorted\" class=\"{{expandingProperty.sortingIcon}} pull-right\"></i></th>\n" +
-                    "       <th ng-repeat=\"col in colDefinitions\"><a ng-if=\"col.sortable\" ng-click=\"sortBy(col)\">{{col.displayName || col.field}}</a><span ng-if=\"!col.sortable\">{{col.displayName || col.field}}</span><i ng-if=\"col.sorted\" class=\"{{col.sortingIcon}} pull-right\"></i></th>\n" +
+                    "       <th>{{expandingProperty.displayName || expandingProperty.field || expandingProperty}}<a class=\"pull-right\" ng-if=\"expandingProperty.sortable\" ng-click=\"sortBy(expandingProperty)\"><i ng-if=\"expandingProperty.sorted\" class=\"{{expandingProperty.sortingIcon}}\"></i><i ng-if=\"!expandingProperty.sorted\" class=\"{{sortedNone}} text-muted\"></i></a></th>\n" +
+                    "       <th ng-repeat=\"col in colDefinitions\">{{col.displayName || col.field}}<a class=\"pull-right\" ng-if=\"col.sortable\" ng-click=\"sortBy(col)\"><i ng-if=\"col.sorted\" class=\"{{col.sortingIcon}}\"></i><i ng-if=\"!col.sorted\" class=\"{{sortedNone}} text-muted\"></i></a></th>\n" +
                     "     </tr>\n" +
                     "   </thead>\n" +
                     "   <tbody>\n" +
@@ -102,8 +102,9 @@
                         attrs.iconExpand = attrs.iconExpand ? attrs.iconExpand : 'icon-plus  glyphicon glyphicon-plus  fa fa-plus';
                         attrs.iconCollapse = attrs.iconCollapse ? attrs.iconCollapse : 'icon-minus glyphicon glyphicon-minus fa fa-minus';
                         attrs.iconLeaf = attrs.iconLeaf ? attrs.iconLeaf : 'icon-file  glyphicon glyphicon-file  fa fa-file';
-                        attrs.sortedAsc = attrs.sortedAsc ? attrs.sortedAsc : 'icon-file  glyphicon glyphicon-chevron-up  fa angle-up';
-                        attrs.sortedDesc = attrs.sortedDesc ? attrs.sortedDesc : 'icon-file  glyphicon glyphicon-chevron-down  fa angle-down';
+                        attrs.sortedAsc = attrs.sortedAsc ? attrs.sortedAsc : 'icon-file  glyphicon glyphicon-chevron-up  fa fa-sort-up';
+                        attrs.sortedDesc = attrs.sortedDesc ? attrs.sortedDesc : 'icon-file  glyphicon glyphicon-chevron-down  fa fa-sort-down';
+                        attrs.sortedNone = attrs.sortedNone ? attrs.sortedNone : 'icon-file  glyphicon glyphicon-sort  fa fa-sort';
                         attrs.expandLevel = attrs.expandLevel ? attrs.expandLevel : '0';
                         expand_level = parseInt(attrs.expandLevel, 10);
 
@@ -133,6 +134,7 @@
                         };
 
                         getExpandingProperty();
+                        scope.sortedNone = attrs.sortedNone;
 
                         if (!attrs.colDefs) {
                             if (scope.treeData.length) {
@@ -221,17 +223,23 @@
 
                         /* sorting methods */
                         scope.sortBy = function (col) {
-                            if (col.sortDirection === "asc") {
-                                sort_recursive(scope.treeData, col, true);
-                                col.sortDirection = "desc";
-                                col.sortingIcon = attrs.sortedDesc;
-                            } else {
+                            if(col.sortDirection === "none" || !col.sortDirection) {
                                 sort_recursive(scope.treeData, col, false);
                                 col.sortDirection = "asc";
                                 col.sortingIcon = attrs.sortedAsc;
+                                col.sorted = true;
+                                resetSorting(col);
+                            } else if (col.sortDirection === "asc") {
+                                sort_recursive(scope.treeData, col, true);
+                                col.sortDirection = "desc";
+                                col.sortingIcon = attrs.sortedDesc;
+                                col.sorted = true;
+                                resetSorting(col);
+                            } else if (col.sortDirection = "desc") {
+                                scope.treeData = angular.copy(scope.originalTreeData, []);
+                                col.sortDirection = "none";
+                                col.sorted = false;
                             }
-                            col.sorted = true;
-                            resetSorting(col);
                         };
 
                         var sort_recursive = function (elements, col, descending) {
@@ -282,6 +290,10 @@
                                     col.sortDirection = "none";
                                 }
                             }
+                            if(scope.expandingProperty.field != sortedCol.field){
+                                scope.expandingProperty.sorted = false;
+                                scope.expandingProperty.sortDirection = "none";
+                            }
                         }
 
                         /* end of sorting methods */
@@ -313,6 +325,7 @@
                         };
 
                         scope.tree_rows = [];
+                        scope.originalTreeData = null;
 
                         on_treeData_change = function () {
                             getExpandingProperty();
@@ -399,6 +412,7 @@
                                 }
                             };
                             _ref = scope.treeData;
+                            if(!scope.originalTreeData || !scope.originalTreeData.length) scope.originalTreeData = angular.copy(scope.treeData, []);
                             _results = [];
                             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                                 root_branch = _ref[_i];
