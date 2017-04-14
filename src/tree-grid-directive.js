@@ -9,8 +9,8 @@
                     " <table class=\"table tree-grid\">\n" +
                     "   <thead>\n" +
                     "     <tr>\n" +
-                    "       <th>{{expandingProperty.displayName || expandingProperty.field || expandingProperty}}<a class=\"pull-right\" ng-if=\"expandingProperty.sortable\" ng-click=\"sortBy(expandingProperty)\"><i ng-if=\"expandingProperty.sorted\" class=\"{{expandingProperty.sortingIcon}}\"></i><i ng-if=\"!expandingProperty.sorted\" class=\"{{sortedNone}} text-muted\"></i></a></th>\n" +
-                    "       <th ng-repeat=\"col in colDefinitions\">{{col.displayName || col.field}}<a class=\"pull-right\" ng-if=\"col.sortable\" ng-click=\"sortBy(col)\"><i ng-if=\"col.sorted\" class=\"{{col.sortingIcon}}\"></i><i ng-if=\"!col.sorted\" class=\"{{sortedNone}} text-muted\"></i></a></th>\n" +
+                    "       <th>{{expandingProperty.displayName || expandingProperty.field || expandingProperty}}<a style=\"margin-left\:10px\" ng-if=\"expandingProperty.sortable\" ng-click=\"sortBy(expandingProperty)\"><i ng-if=\"expandingProperty.sorted\" class=\"{{expandingProperty.sortingIcon}}\"></i><i ng-if=\"!expandingProperty.sorted\" class=\"{{sortedNone}} text-muted\"></i></a></th>\n" +
+                    "       <th ng-repeat=\"col in colDefinitions\">{{col.displayName || col.field}}<a style=\"margin-left\:10px\" ng-if=\"col.sortable\" ng-click=\"sortBy(col)\"><i ng-if=\"col.sorted\" class=\"{{col.sortingIcon}}\"></i><i ng-if=\"!col.sorted\" class=\"{{sortedNone}} text-muted\"></i></a></th>\n" +
                     "     </tr>\n" +
                     "   </thead>\n" +
                     "   <tbody>\n" +
