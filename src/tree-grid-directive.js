@@ -169,7 +169,7 @@
                                     return _results;
                                 }
                             };
-                            _ref = scope.treeData;
+                            _ref = scope.originalTreeData;
                             _results = [];
                             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                                 root_branch = _ref[_i];
@@ -224,19 +224,19 @@
                         /* sorting methods */
                         scope.sortBy = function (col) {
                             if(col.sortDirection === "none" || !col.sortDirection) {
-                                sort_recursive(scope.treeData, col, false);
+                                sort_recursive(scope.originalTreeData, col, false);
                                 col.sortDirection = "asc";
                                 col.sortingIcon = attrs.sortedAsc;
                                 col.sorted = true;
                                 resetSorting(col);
                             } else if (col.sortDirection === "asc") {
-                                sort_recursive(scope.treeData, col, true);
+                                sort_recursive(scope.originalTreeData, col, true);
                                 col.sortDirection = "desc";
                                 col.sortingIcon = attrs.sortedDesc;
                                 col.sorted = true;
                                 resetSorting(col);
                             } else if (col.sortDirection = "desc") {
-                                scope.treeData = angular.copy(scope.originalTreeData, []);
+                                scope.originalTreeData = angular.copy(scope.treeData, []);
                                 col.sortDirection = "none";
                                 col.sorted = false;
                             }
@@ -325,7 +325,7 @@
                         };
 
                         scope.tree_rows = [];
-                        scope.originalTreeData = null;
+                        scope.originalTreeData = [];
 
                         on_treeData_change = function () {
                             getExpandingProperty();
@@ -411,8 +411,7 @@
                                     return _results;
                                 }
                             };
-                            _ref = scope.treeData;
-                            if(!scope.originalTreeData || !scope.originalTreeData.length) scope.originalTreeData = angular.copy(scope.treeData, []);
+                            _ref = scope.originalTreeData;
                             _results = [];
                             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
                                 root_branch = _ref[_i];
@@ -421,7 +420,29 @@
                             return _results;
                         };
 
-                        scope.$watch('treeData', on_treeData_change, true);
+                        var originalChange = false;
+                        scope.$watch('originalTreeData', function(){
+                            on_treeData_change();
+                            if(originalChange && scope.originalTreeData.length){
+                                originalChange = false;
+                                if(scope.expandingProperty.sorted && scope.expandingProperty.sortDirection && scope.expandingProperty.sortDirection != "none") {
+                                    sort_recursive(scope.originalTreeData, scope.expandingProperty, true);
+                                }
+                                else{
+                                    for (var i = 0; i < scope.colDefinitions.length; i++) {
+                                        var col = scope.colDefinitions[i];
+                                        if (col.sorted  && col.sortDirection && col.sortDirection != "none") {
+                                            sort_recursive(scope.originalTreeData, col, true);
+                                        }
+                                    }
+                                }
+                            }
+                        }, true);
+
+                        scope.$watch('treeData', function(){
+                            scope.originalTreeData = angular.copy(scope.treeData, []);
+                            originalChange = true;
+                        }, true);
 
                         on_expandTo_change = function () {
                             if (angular.isDefined((scope.expandTo))) {
