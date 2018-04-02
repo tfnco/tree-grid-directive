@@ -19,12 +19,12 @@
                     "       <td><a ng-click=\"user_clicks_branch(row.branch)\"><i ng-class=\"row.tree_icon\"\n" +
                     "              ng-click=\"row.branch.expanded = !row.branch.expanded\"\n" +
                     "              class=\"indented tree-icon\"></i></a><span ng-if=\"expandingProperty.cellTemplate\" class=\"indented tree-label\" " +
-                    "              ng-click=\"on_user_click(row.branch)\" template-compile=\"expandingProperty.cellTemplate\"></span>" +
+                    "              ng-click=\"on_user_click(row.branch)\" cell-template-compile=\"expandingProperty.cellTemplate\"></span>" +
                     "              <span  ng-if=\"!expandingProperty.cellTemplate\" class=\"indented tree-label\" ng-click=\"on_user_click(row.branch)\">\n" +
                     "             {{row.branch[expandingProperty.field] || row.branch[expandingProperty]}}</span>\n" +
                     "       </td>\n" +
                     "       <td ng-repeat=\"col in colDefinitions\">\n" +
-                    "         <div ng-if=\"col.cellTemplate\" template-compile=\"col.cellTemplate\" cell-template-scope=\"col.cellTemplateScope\"></div>\n" +
+                    "         <div ng-if=\"col.cellTemplate\" cell-template-compile=\"col.cellTemplate\" cell-template-scope=\"col.cellTemplateScope\"></div>\n" +
                     "         <div ng-if=\"!col.cellTemplate\">{{row.branch[col.field]}}</div>\n" +
                     "       </td>\n" +
                     "     </tr>\n" +
@@ -39,7 +39,7 @@
             'template/treeGrid/treeGrid.html'
         ])
 
-        .directive('templateCompile', [
+        .directive('cellTemplateCompile', [
             '$compile',
             function ($compile) {
                 return {
@@ -48,7 +48,7 @@
                         scope.cellTemplateScope = scope.$eval(attrs.cellTemplateScope);
 
                         // Watch for changes to expression.
-                        scope.$watch(attrs.compile, function (new_val) {
+                        scope.$watch(attrs.cellTemplateCompile, function (new_val) {
                             /*
                              * Compile creates a linking function
                              * that can be used with any scope.
